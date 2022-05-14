@@ -4,42 +4,55 @@ using UnityEngine;
 
 public class FruitBehaviour : MonoBehaviour
 {
-    //**** Implementations of draggable object//****
-    private Vector3 mOffset;
-    private bool isBeingDragged = false;
+ 
 
-    public Vector3 gravity;
-    public Vector3 myVel;
-    public float xVel;
-    public float yVel;
+    [Header("Gameplay Values")]
     public float maxSpeed;
     public float dragSpeed;
     public float throwForce;
+    [Range(0, 1)]
     public float bounciness;
-    public float airDecelerationRate; 
+    [Range(0.98f, 1f)]
+    public float airDecelerationRate;
 
-    public float floorLevel;
-    public float screenWidth;
+    [Header("References")]
+    public AudioClip grabSound;
+    public AudioClip squishSound;
+    public AudioClip biteSound;
+    public AudioClip spitSound;
+
+    public GameObject mySprite;
+    public Sprite bittenSprite;
 
     private Vector3 targetPosition;
-
+    private Vector3 myVel;
+    private float xVel;
+    private float yVel;
     private bool isOnGround = false;
+    private int bitesTaken = 0;
+    private AudioSource audioSource;
+    private Vector3 mOffset;
+    private bool isBeingDragged = false;
 
+    private void Start()
+    {
+        audioSource = gameObject.GetComponent<AudioSource>();
+    }
 
     private void OnMouseDown()
     {
-            mOffset = gameObject.transform.position - GetMouseWorldPos();
-            xVel = 0;
-            yVel = 0;
-            isBeingDragged = true;
-
+        mOffset = gameObject.transform.position - GetMouseWorldPos();
+        xVel = 0;
+        yVel = 0;
+        isBeingDragged = true;
+        gameObject.GetComponent<AudioSource>().PlayOneShot(grabSound);
     }
 
     private void OnMouseUp()
     {
-            isBeingDragged = false;
-            xVel = (targetPosition.x - transform.position.x) * throwForce;
-            yVel = (targetPosition.y - transform.position.y) * throwForce;
+        isBeingDragged = false;
+        xVel = (targetPosition.x - transform.position.x) * throwForce;
+        yVel = (targetPosition.y - transform.position.y) * throwForce;
     }
 
     private Vector3 GetMouseWorldPos()
@@ -57,91 +70,142 @@ public class FruitBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-            myVel = new Vector3(xVel, yVel, 0);
-            if (transform.position.y == PhysicsManager.floorLevel)
+        MoveSelf();
+        CheckBoundaries();
+    }
+
+    private void MoveSelf()
+    {
+        myVel = new Vector3(xVel, yVel, 0);
+        if (transform.position.y == PhysicsManager.floorLevel)
+        {
+            isOnGround = true;
+        }
+        else
+        {
+            isOnGround = false;
+        }
+
+        if (!isBeingDragged)
+        {
+            if (yVel > -maxSpeed)
             {
-                isOnGround = true;
+                yVel += PhysicsManager.gravity.y;
+            }
+            transform.position += myVel;
+        }
+        else if (isBeingDragged)
+        {
+            if (transform.position != targetPosition)
+            {
+                transform.position = Vector3.Lerp(transform.position, targetPosition, dragSpeed);
+            }
+        }
+
+        // Reduce xVel according to airDrag
+        if (xVel > 0.001f || xVel < -0.001f)
+        {
+            if (isOnGround)
+            {
+                xVel = xVel * 0.9f;
+
             }
             else
             {
-                isOnGround = false;
+                xVel = xVel * airDecelerationRate;
             }
+        }
+        else
+        {
+            xVel = 0;
+        }
 
-            if (!isBeingDragged)
-            {
-                if (yVel > -maxSpeed)
-                {
-                    //yVel -= 0.001f;
-                    yVel += PhysicsManager.gravity.y;
-                }
-                transform.position += myVel;
-            }
-            else if (isBeingDragged)
-            {
-                if (transform.position != targetPosition)
-                {
-                    transform.position = Vector3.Lerp(transform.position, targetPosition, dragSpeed);
-                }
-            }
+    }
 
-            // Reduce xVel according to airDrag
-            if (xVel > 0.001f || xVel < -0.001f)
+    private void CheckBoundaries()
+    {
+        // Ground check
+        if (transform.position.y <= PhysicsManager.floorLevel)
+        {
+            transform.position = new Vector3(transform.position.x, PhysicsManager.floorLevel, 0);
+            if (yVel < -maxSpeed * 0.2)
             {
-                if (isOnGround)
-                {
-                    xVel = xVel * 0.9f;
-
-                }
-                else
-                {
-                    xVel = xVel * airDecelerationRate;
-                }
+                yVel = -yVel * bounciness;
+                audioSource.PlayOneShot(squishSound);
             }
             else
             {
-                xVel = 0;
+                yVel = 0;
             }
 
-            // Ground check
-            if (transform.position.y <= PhysicsManager.floorLevel)
+        }
+
+        // Walls checks
+        {
+            if (transform.position.x >= PhysicsManager.screenWidth)
             {
-                transform.position = new Vector3(transform.position.x, floorLevel, 0);
-                if (yVel < -maxSpeed * 0.2)
+                transform.position = new Vector3(PhysicsManager.screenWidth, transform.position.y, 0);
+                if (xVel > maxSpeed * 0.2)
                 {
-                    yVel = -yVel * bounciness;
+                    xVel = -xVel * bounciness;
                 }
                 else
                 {
-                    yVel = 0;
+                    xVel = 0;
                 }
-            }
+                audioSource.PlayOneShot(squishSound);
 
-            // Walls checks
-            {
-                if (transform.position.x >= PhysicsManager.screenWidth)
-                {
-                    transform.position = new Vector3(PhysicsManager.screenWidth, transform.position.y, 0);
-                    if (xVel > maxSpeed * 0.2)
-                    {
-                        xVel = -xVel * bounciness;
-                    }
-                    else
-                    {
-                        xVel = 0;
-                    }
-                }
-                else if (transform.position.x <= -PhysicsManager.screenWidth)
-                {
-                    transform.position = new Vector3(-PhysicsManager.screenWidth, transform.position.y, 0);
-                    if (xVel < -maxSpeed * 0.2)
-                    {
-                        xVel = -xVel * bounciness;
-                    }
-                    else
-                    {
-                        xVel = 0;
-                    }
-                }
             }
+            else if (transform.position.x <= -PhysicsManager.screenWidth)
+            {
+                transform.position = new Vector3(-PhysicsManager.screenWidth, transform.position.y, 0);
+                if (xVel < -maxSpeed * 0.2)
+                {
+                    xVel = -xVel * bounciness;
+                }
+                else
+                {
+                    xVel = 0;
+                }
+                audioSource.PlayOneShot(squishSound);
+
+            }
+        }
+    }
+
+    public void EnterBasket()
+    {
+        Invoke("GetEaten", 0.2f);
+        xVel = 0;
+        yVel = 0;
+    }
+
+    public void GetEaten()
+    {
+        bitesTaken++;
+        audioSource.PlayOneShot(biteSound);
+
+        if (bitesTaken == 1)
+        {
+            mySprite.GetComponent<SpriteRenderer>().sprite = bittenSprite;
+            Invoke("SpitOut", 1f);
+        }
+        if (bitesTaken == 2)
+        {
+            Invoke("FinishApple", 0.9f);
+        }
+    }
+
+    public void SpitOut()
+    {
+        audioSource.pitch += 0.2f;
+        audioSource.PlayOneShot(spitSound);
+        xVel = 0.15f;
+        yVel = 0.15f;
+    }
+
+    public void FinishApple()
+    {
+        Destroy(gameObject);
     }
 }
