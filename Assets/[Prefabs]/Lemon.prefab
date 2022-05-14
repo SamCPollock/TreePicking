@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 3533907324333590453}
   - component: {fileID: 3533907324333590452}
   - component: {fileID: 3533907324333590458}
+  - component: {fileID: -7664719043675665366}
   m_Layer: 0
   m_Name: Lemon
   m_TagString: Untagged
@@ -141,7 +142,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3533907324333590455}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4704da7c9755b464496b92940932c1b4, type: 3}
   m_Name: 
@@ -154,5 +155,18 @@ MonoBehaviour:
   dragSpeed: 0.2
   throwForce: 0.2
   bounciness: 0.2
+  airDecelerationRate: 0.99
   floorLevel: -4
   screenWidth: 8.5
+--- !u!114 &-7664719043675665366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3533907324333590455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27fda02754fe0124b8c84514dd7794fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

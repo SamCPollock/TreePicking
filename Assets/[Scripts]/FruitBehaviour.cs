@@ -16,36 +16,36 @@ public class FruitBehaviour : MonoBehaviour
     public float dragSpeed;
     public float throwForce;
     public float bounciness;
+    public float airDecelerationRate; 
 
     public float floorLevel;
     public float screenWidth;
 
     private Vector3 targetPosition;
 
-    private Vector3 lastPosition;
     private bool isOnGround = false;
+
 
     private void OnMouseDown()
     {
-        mOffset = gameObject.transform.position - GetMouseWorldPos();
-        xVel = 0;
-        yVel = 0;
-        isBeingDragged = true;
+            mOffset = gameObject.transform.position - GetMouseWorldPos();
+            xVel = 0;
+            yVel = 0;
+            isBeingDragged = true;
+
     }
 
     private void OnMouseUp()
     {
-        isBeingDragged = false;
-        xVel = (targetPosition.x - transform.position.x ) * throwForce;
-        yVel = (targetPosition.y - transform.position.y) * throwForce;
+            isBeingDragged = false;
+            xVel = (targetPosition.x - transform.position.x) * throwForce;
+            yVel = (targetPosition.y - transform.position.y) * throwForce;
     }
 
     private Vector3 GetMouseWorldPos()
     {
         Vector3 mousePoint = Input.mousePosition;
-
         mousePoint.z = 0;
-
         return Camera.main.ScreenToWorldPoint(mousePoint);
     }
 
@@ -57,94 +57,91 @@ public class FruitBehaviour : MonoBehaviour
 
     private void FixedUpdate()
     {
-        myVel = new Vector3(xVel, yVel, 0);
-        if (transform.position.y == PhysicsManager.floorLevel)
-        {
-            isOnGround = true;
-        }
-        else
-        {
-            isOnGround = false;
-        }
-
-        if (!isBeingDragged)
-        {
-            if (yVel > -maxSpeed)
+            myVel = new Vector3(xVel, yVel, 0);
+            if (transform.position.y == PhysicsManager.floorLevel)
             {
-                //yVel -= 0.001f;
-                yVel += PhysicsManager.gravity.y;
-            }
-            transform.position += myVel; 
-        }
-        else if (isBeingDragged)
-        {
-            if (transform.position != targetPosition)
-            {
-                transform.position = Vector3.Lerp(transform.position, targetPosition, dragSpeed);
-            }
-        }
-
-        // Reduce xVel according to airDrag
-        if (xVel > 0.001f || xVel < -0.001f)
-        {
-            if (isOnGround)
-            {
-                xVel = xVel * 0.9f;
-
+                isOnGround = true;
             }
             else
             {
-                xVel = xVel * 0.99f;
+                isOnGround = false;
             }
-        }
-        else
-        {
-            xVel = 0;
-        }
 
-        // Ground check
-        if (transform.position.y <= PhysicsManager.floorLevel)
-        {
-            transform.position = new Vector3(transform.position.x, floorLevel, 0);
-            if (yVel < -maxSpeed * 0.2)
+            if (!isBeingDragged)
             {
-                yVel = -yVel * bounciness;
+                if (yVel > -maxSpeed)
+                {
+                    //yVel -= 0.001f;
+                    yVel += PhysicsManager.gravity.y;
+                }
+                transform.position += myVel;
+            }
+            else if (isBeingDragged)
+            {
+                if (transform.position != targetPosition)
+                {
+                    transform.position = Vector3.Lerp(transform.position, targetPosition, dragSpeed);
+                }
+            }
+
+            // Reduce xVel according to airDrag
+            if (xVel > 0.001f || xVel < -0.001f)
+            {
+                if (isOnGround)
+                {
+                    xVel = xVel * 0.9f;
+
+                }
+                else
+                {
+                    xVel = xVel * airDecelerationRate;
+                }
             }
             else
             {
-                yVel = 0;
+                xVel = 0;
             }
-        }
 
-        // Walls checks
-        {
-            if (transform.position.x >= PhysicsManager.screenWidth)
+            // Ground check
+            if (transform.position.y <= PhysicsManager.floorLevel)
             {
-                transform.position = new Vector3 (PhysicsManager.screenWidth, transform.position.y, 0);
-                if (xVel > maxSpeed * 0.2)
+                transform.position = new Vector3(transform.position.x, floorLevel, 0);
+                if (yVel < -maxSpeed * 0.2)
                 {
-                    xVel = -xVel * bounciness;
+                    yVel = -yVel * bounciness;
                 }
                 else
                 {
-                    xVel = 0;
+                    yVel = 0;
                 }
             }
-            else if (transform.position.x <= -PhysicsManager.screenWidth)
+
+            // Walls checks
             {
-                transform.position = new Vector3(-PhysicsManager.screenWidth, transform.position.y, 0);
-                if (xVel < -maxSpeed * 0.2)
+                if (transform.position.x >= PhysicsManager.screenWidth)
                 {
-                    xVel = -xVel * bounciness;
+                    transform.position = new Vector3(PhysicsManager.screenWidth, transform.position.y, 0);
+                    if (xVel > maxSpeed * 0.2)
+                    {
+                        xVel = -xVel * bounciness;
+                    }
+                    else
+                    {
+                        xVel = 0;
+                    }
                 }
-                else
+                else if (transform.position.x <= -PhysicsManager.screenWidth)
                 {
-                    xVel = 0;
+                    transform.position = new Vector3(-PhysicsManager.screenWidth, transform.position.y, 0);
+                    if (xVel < -maxSpeed * 0.2)
+                    {
+                        xVel = -xVel * bounciness;
+                    }
+                    else
+                    {
+                        xVel = 0;
+                    }
                 }
             }
-        }
-
-
-        lastPosition = transform.position;
     }
 }
