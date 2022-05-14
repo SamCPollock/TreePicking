@@ -21,7 +21,7 @@ public class FruitBehaviour : MonoBehaviour
     public AudioClip biteSound;
     public AudioClip spitSound;
 
-    public GameObject mySprite;
+    public SpriteRenderer mySprite;
     public Sprite bittenSprite;
 
     private Vector3 targetPosition;
@@ -176,6 +176,8 @@ public class FruitBehaviour : MonoBehaviour
     public void EnterBasket()
     {
         Invoke("GetEaten", 0.2f);
+        mySprite.enabled = false;
+
         xVel = 0;
         yVel = 0;
     }
@@ -187,7 +189,7 @@ public class FruitBehaviour : MonoBehaviour
 
         if (bitesTaken == 1)
         {
-            mySprite.GetComponent<SpriteRenderer>().sprite = bittenSprite;
+            mySprite.sprite = bittenSprite;
             Invoke("SpitOut", 1f);
         }
         if (bitesTaken == 2)
@@ -198,6 +200,7 @@ public class FruitBehaviour : MonoBehaviour
 
     public void SpitOut()
     {
+        mySprite.enabled = true;
         audioSource.pitch += 0.2f;
         audioSource.PlayOneShot(spitSound);
         xVel = 0.15f;

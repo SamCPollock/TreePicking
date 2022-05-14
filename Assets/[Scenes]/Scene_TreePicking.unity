@@ -190,7 +190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 135394606}
   m_Layer: 0
-  m_Name: Tree (1)
+  m_Name: LemonTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -254,7 +254,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &247887003 stripped
 Transform:
@@ -949,7 +949,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1496969998}
   m_Layer: 0
-  m_Name: Tree
+  m_Name: AppleTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1080,7 +1080,7 @@ GameObject:
   - component: {fileID: 1893595659}
   - component: {fileID: 1893595658}
   m_Layer: 0
-  m_Name: OceanView
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1296,7 +1296,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2096898140}
   m_Layer: 0
-  m_Name: Tree (2)
+  m_Name: PearTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1400,7 +1400,7 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: 69875e902075b3449a3359d7f8d97d00, type: 3}
     - target: {fileID: 6791353225971350055, guid: eda39d19fce68374f9625655556e9730, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6791353225971350055, guid: eda39d19fce68374f9625655556e9730, type: 3}
       propertyPath: m_LocalPosition.x

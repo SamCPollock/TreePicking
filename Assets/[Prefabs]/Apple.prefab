@@ -157,7 +157,7 @@ MonoBehaviour:
   squishSound: {fileID: 8300000, guid: f8cbe4cf99363cf4a81a2f4317000199, type: 3}
   biteSound: {fileID: 8300000, guid: 073806042a752cb4f9193322b3835738, type: 3}
   spitSound: {fileID: 8300000, guid: 79443d5c8e88d244fa7382b04469a3bf, type: 3}
-  mySprite: {fileID: 3533907324044755174}
+  mySprite: {fileID: 3533907324044755172}
   bittenSprite: {fileID: 21300000, guid: c3f2e5460d9aecb498cf82d816bd7383, type: 3}
 --- !u!114 &1800692875
 MonoBehaviour:
